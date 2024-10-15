@@ -91,32 +91,6 @@ public class DenunciaController {
         }
     }
 
-    @PostMapping("/login")
-public ResponseEntity<?> login(@RequestBody Map<String, String> payload) {
-    String folio = payload.get("folio");
-    String contrasenaIngresada = payload.get("contrasena");
-
-    // Buscar la denuncia por folio
-    Denuncia denuncia = denunciaRepository.findByFolio(folio);
-    if (denuncia == null) {
-        return new ResponseEntity<>(Map.of("mensaje", "Folio no encontrado"), HttpStatus.NOT_FOUND); // Folio no encontrado
-    }
-
-    // Verificar la contraseña sin cifrado
-    if (!denuncia.getContrasena().equals(contrasenaIngresada)) {
-        return new ResponseEntity<>(Map.of("mensaje", "Credenciales invalidas"), HttpStatus.UNAUTHORIZED); // Contraseña incorrecta
-    }
-
-    // Crear un mapa con los campos específicos que queremos devolver
-    Map<String, Object> respuesta = Map.of(
-        "folio", denuncia.getFolio(),
-        "estatus", denuncia.getEstatus(),
-        "comentarios", denuncia.getComentarios() // o comentarios si tienes algún valor aquí
-    );
-
-    // Devolver solo los campos seleccionados
-    return new ResponseEntity<>(respuesta, HttpStatus.OK);
-}
 
 @PostMapping("/consultar")
 public ResponseEntity<?> consultarDenuncia(@RequestBody Map<String, String> payload) {
@@ -233,6 +207,24 @@ public ResponseEntity<String> agregarComentario(@PathVariable String folio, @Req
         }
     }
     
+    @GetMapping("/todas")
+public ResponseEntity<List<Denuncia>> obtenerTodasLasDenuncias() {
+    try {
+        // Obtener todas las denuncias desde el repositorio
+        List<Denuncia> denuncias = denunciaRepository.findAll();
+        
+        // Verificar si hay denuncias
+        if (denuncias.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Si no hay denuncias, devolver NO CONTENT
+        }
+
+        // Devolver la lista de denuncias
+        return new ResponseEntity<>(denuncias, HttpStatus.OK);
+    } catch (Exception e) {
+        e.printStackTrace(); // Para depuración en consola
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
 
 
     
