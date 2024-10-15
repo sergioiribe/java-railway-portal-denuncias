@@ -107,8 +107,15 @@ public ResponseEntity<?> login(@RequestBody Map<String, String> payload) {
         return new ResponseEntity<>(Map.of("mensaje", "Credenciales invalidas"), HttpStatus.UNAUTHORIZED); // Contraseña incorrecta
     }
 
-    // Devolver la denuncia si todo es correcto
-    return new ResponseEntity<>(Map.of("mensaje", "Credenciales validas"), HttpStatus.OK); // Contraseña incorrecta
+    // Crear un mapa con los campos específicos que queremos devolver
+    Map<String, Object> respuesta = Map.of(
+        "folio", denuncia.getFolio(),
+        "estatus", denuncia.getEstatus(),
+        "comentarios", denuncia.getComentarios() // o comentarios si tienes algún valor aquí
+    );
+
+    // Devolver solo los campos seleccionados
+    return new ResponseEntity<>(respuesta, HttpStatus.OK);
 }
 
 @PostMapping("/consultar")
