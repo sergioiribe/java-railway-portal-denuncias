@@ -7,20 +7,20 @@ import java.util.ArrayList;
 
 
 @Entity
-@Table(name = "Denuncia")
+@Table(name = "denuncia")
 public class Denuncia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idDenuncia;
 
-    @Column(nullable = false)
+    @Column(name = "id_empresa", nullable = false)
     private int idEmpresa;
 
-    @Column(nullable = false)
+    @Column(name = "id_pais", nullable = false)
     private int idPais;
 
-    @Column(nullable = false)
+    @Column(name = "id_estado", nullable = false)
     private int idEstado;
 
     @Column(length = 10, nullable = false)
