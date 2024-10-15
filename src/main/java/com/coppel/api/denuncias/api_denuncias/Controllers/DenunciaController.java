@@ -108,7 +108,7 @@ public ResponseEntity<?> login(@RequestBody Map<String, String> payload) {
     }
 
     // Devolver la denuncia si todo es correcto
-    return new ResponseEntity<>(Map.of("mensaje", "Credenciales validas"), HttpStatus.UNAUTHORIZED); // Contraseña incorrecta
+    return new ResponseEntity<>(Map.of("mensaje", "Credenciales validas"), HttpStatus.OK); // Contraseña incorrecta
 }
 
 @PostMapping("/consultar")
