@@ -18,11 +18,12 @@ public class ApiDenunciasApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedOrigins("https://portal-denuncias.vercel.app").allowedMethods("*").allowedHeaders("*");
+				// Configura CORS permitiendo múltiples orígenes
+				registry.addMapping("/**")
+					.allowedOrigins("http://localhost:5173", "https://portal-denuncias.vercel.app")
+					.allowedMethods("*") // Permitir todos los métodos
+					.allowedHeaders("*"); // Permitir todos los encabezados
 			}
 		};
 	}
-	
-
 }
-
