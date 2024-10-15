@@ -9,11 +9,13 @@ import com.coppel.api.denuncias.api_denuncias.Entities.Denuncia;
 import com.coppel.api.denuncias.api_denuncias.Repositories.DenunciaRepository;
 import com.coppel.api.denuncias.api_denuncias.Exceptions.DenunciaNotFoundException;
 import com.coppel.api.denuncias.api_denuncias.Entities.GeneradorFolio;
+import com.coppel.api.denuncias.api_denuncias.Repositories.EmpresaRepository;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/denuncias")
@@ -21,7 +23,11 @@ public class DenunciaController {
 
     @Autowired
     private DenunciaRepository denunciaRepository;
+    
+    @Autowired
+    private EmpresaRepository empresaRepository;
 
+    // Obtener una denuncia por folio
     // Obtener una denuncia por folio
     @GetMapping("/{folio}")
     public ResponseEntity<Denuncia> obtenerDenunciaPorFolio(@PathVariable String folio) {
@@ -207,24 +213,29 @@ public ResponseEntity<String> agregarComentario(@PathVariable String folio, @Req
         }
     }
     
-    @GetMapping("/todas")
-public ResponseEntity<List<Denuncia>> obtenerTodasLasDenuncias() {
-    try {
-        // Obtener todas las denuncias desde el repositorio
-        List<Denuncia> denuncias = denunciaRepository.findAll();
-        
-        // Verificar si hay denuncias
-        if (denuncias.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Si no hay denuncias, devolver NO CONTENT
-        }
 
-        // Devolver la lista de denuncias
-        return new ResponseEntity<>(denuncias, HttpStatus.OK);
-    } catch (Exception e) {
-        e.printStackTrace(); // Para depuración en consola
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+@GetMapping("/todas")
+public ResponseEntity<List<Map<String, Object>>> obtenerTodasDenuncias() {
+    List<Map<String, Object>> resultado = new ArrayList<>();
+
+    List<Denuncia> denuncias = denunciaRepository.findAll();
+    for (Denuncia denuncia : denuncias) {
+        Map<String, Object> denunciaMap = new HashMap<>();
+        denunciaMap.put("folio", denuncia.getFolio());
+        denunciaMap.put("estatus", denuncia.getEstatus());
+        denunciaMap.put("comentarios", denuncia.getComentarios());
+
+        // Convertir el idEmpresa a Long
+        String nombreEmpresa = empresaRepository.findNombreById(Long.valueOf(denuncia.getIdEmpresa()));
+        denunciaMap.put("empresa", nombreEmpresa);
+
+        resultado.add(denunciaMap);
     }
+
+    return new ResponseEntity<>(resultado, HttpStatus.OK);
 }
+
+
 
 
     
