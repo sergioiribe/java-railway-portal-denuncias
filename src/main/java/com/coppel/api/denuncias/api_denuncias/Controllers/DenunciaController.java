@@ -91,47 +91,46 @@ public class DenunciaController {
         }
     }
 
-    // Obtener una denuncia por folio y verificar la contraseña (sin cifrado)
     @PostMapping("/login")
-    public ResponseEntity<Denuncia> login(@RequestBody Map<String, String> payload) {
-        String folio = payload.get("folio");
-        String contrasenaIngresada = payload.get("contrasena");
+public ResponseEntity<?> login(@RequestBody Map<String, String> payload) {
+    String folio = payload.get("folio");
+    String contrasenaIngresada = payload.get("contrasena");
 
-        // Buscar la denuncia por folio
-        Denuncia denuncia = denunciaRepository.findByFolio(folio);
-        if (denuncia == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Folio no encontrado
-        }
-
-        // Verificar la contraseña sin cifrado
-        if (!denuncia.getContrasena().equals(contrasenaIngresada)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // Contraseña incorrecta
-        }
-
-        // Devolver la denuncia si todo es correcto
-        return new ResponseEntity<>(HttpStatus.OK);
+    // Buscar la denuncia por folio
+    Denuncia denuncia = denunciaRepository.findByFolio(folio);
+    if (denuncia == null) {
+        return new ResponseEntity<>(Map.of("mensaje", "Folio no encontrado"), HttpStatus.NOT_FOUND); // Folio no encontrado
     }
 
-    // Obtener una denuncia por folio y verificar la contraseña (sin cifrado)
-    @GetMapping("/consultar")
-    public ResponseEntity<Denuncia> consultarDenuncia(@RequestBody Map<String, String> payload) {
-        String folio = payload.get("folio");
-        String contrasenaIngresada = payload.get("contrasena");
-
-        // Buscar la denuncia por folio
-        Denuncia denuncia = denunciaRepository.findByFolio(folio);
-        if (denuncia == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Folio no encontrado
-        }
-
-        // Verificar la contraseña sin cifrado
-        if (!denuncia.getContrasena().equals(contrasenaIngresada)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // Contraseña incorrecta
-        }
-
-        // Devolver la denuncia si todo es correcto
-        return new ResponseEntity<>(HttpStatus.OK);
+    // Verificar la contraseña sin cifrado
+    if (!denuncia.getContrasena().equals(contrasenaIngresada)) {
+        return new ResponseEntity<>(Map.of("mensaje", "Credenciales invalidas"), HttpStatus.UNAUTHORIZED); // Contraseña incorrecta
     }
+
+    // Devolver la denuncia si todo es correcto
+    return new ResponseEntity<>(Map.of("mensaje", "Credenciales validas"), HttpStatus.UNAUTHORIZED); // Contraseña incorrecta
+}
+
+@PostMapping("/consultar")
+public ResponseEntity<?> consultarDenuncia(@RequestBody Map<String, String> payload) {
+    String folio = payload.get("folio");
+    String contrasenaIngresada = payload.get("contrasena");
+
+    // Buscar la denuncia por folio
+    Denuncia denuncia = denunciaRepository.findByFolio(folio);
+    if (denuncia == null) {
+        return new ResponseEntity<>(Map.of("mensaje", "Folio no encontrado"), HttpStatus.NOT_FOUND); // Folio no encontrado
+    }
+
+    // Verificar la contraseña sin cifrado
+    if (!denuncia.getContrasena().equals(contrasenaIngresada)) {
+        return new ResponseEntity<>(Map.of("mensaje", "Contraseña incorrecta"), HttpStatus.UNAUTHORIZED); // Contraseña incorrecta
+    }
+
+    // Devolver la denuncia si todo es correcto
+    return new ResponseEntity<>(denuncia, HttpStatus.OK);
+}
+
 
     // Agregar un comentario a una denuncia (manteniendo el estatus actual)
 @PutMapping("/{folio}/agregarComentario")
