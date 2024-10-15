@@ -92,7 +92,28 @@ public class DenunciaController {
     }
 
     // Obtener una denuncia por folio y verificar la contraseña (sin cifrado)
-    @PostMapping("/consultar")
+    @PostMapping("/login")
+    public ResponseEntity<Denuncia> login(@RequestBody Map<String, String> payload) {
+        String folio = payload.get("folio");
+        String contrasenaIngresada = payload.get("contrasena");
+
+        // Buscar la denuncia por folio
+        Denuncia denuncia = denunciaRepository.findByFolio(folio);
+        if (denuncia == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Folio no encontrado
+        }
+
+        // Verificar la contraseña sin cifrado
+        if (!denuncia.getContrasena().equals(contrasenaIngresada)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // Contraseña incorrecta
+        }
+
+        // Devolver la denuncia si todo es correcto
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // Obtener una denuncia por folio y verificar la contraseña (sin cifrado)
+    @GetMapping("/consultar")
     public ResponseEntity<Denuncia> consultarDenuncia(@RequestBody Map<String, String> payload) {
         String folio = payload.get("folio");
         String contrasenaIngresada = payload.get("contrasena");
@@ -109,7 +130,7 @@ public class DenunciaController {
         }
 
         // Devolver la denuncia si todo es correcto
-        return new ResponseEntity<>(denuncia, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // Agregar un comentario a una denuncia (manteniendo el estatus actual)
