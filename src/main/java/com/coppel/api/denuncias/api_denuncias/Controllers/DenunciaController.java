@@ -225,6 +225,7 @@ public ResponseEntity<List<Map<String, Object>>> obtenerTodasDenuncias() {
         denunciaMap.put("estatus", denuncia.getEstatus());
         denunciaMap.put("comentarios", denuncia.getComentarios());
         denunciaMap.put("id_denuncia", denuncia.getIdDenuncia());
+        denunciaMap.put("detalle", denuncia.getDetalle());
 
         // Convertir el idEmpresa a Long
         String nombreEmpresa = empresaRepository.findNombreById(Long.valueOf(denuncia.getIdEmpresa()));
