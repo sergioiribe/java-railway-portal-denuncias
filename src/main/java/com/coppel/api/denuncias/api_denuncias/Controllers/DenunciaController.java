@@ -3,6 +3,7 @@ package com.coppel.api.denuncias.api_denuncias.Controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import com.coppel.api.denuncias.api_denuncias.Entities.Denuncia;
@@ -26,6 +27,9 @@ public class DenunciaController {
     
     @Autowired
     private EmpresaRepository empresaRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // Obtener una denuncia por folio
     // Obtener una denuncia por folio
@@ -66,7 +70,9 @@ public class DenunciaController {
             denuncia.setCentro(payload.get("centro").toString());
             denuncia.setDetalle(payload.get("detalle").toString());
             denuncia.setFechaHechos(LocalDate.parse(payload.get("fecha_hechos").toString()));
-            denuncia.setContrasena(payload.get("contrasena").toString());
+
+            String contrasenaEncriptada = passwordEncoder.encode(payload.get("contrasena").toString());
+            denuncia.setContrasena(contrasenaEncriptada);
 
             // Verificar si es anónima
             Boolean anonimato = Boolean.valueOf(payload.get("anonimato").toString());
@@ -110,7 +116,8 @@ public ResponseEntity<?> consultarDenuncia(@RequestBody Map<String, String> payl
     }
 
     // Verificar la contraseña sin cifrado
-    if (!denuncia.getContrasena().equals(contrasenaIngresada)) {
+    if (!passwordEncoder.matches(contrasenaIngresada, denuncia.getContrasena())
+    ) {
         return new ResponseEntity<>(Map.of("mensaje", "Contraseña incorrecta"), HttpStatus.UNAUTHORIZED); // Contraseña incorrecta
     }
 

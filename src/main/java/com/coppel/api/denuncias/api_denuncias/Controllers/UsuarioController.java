@@ -3,6 +3,7 @@ package com.coppel.api.denuncias.api_denuncias.Controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import com.coppel.api.denuncias.api_denuncias.Entities.Usuario;
@@ -17,6 +18,9 @@ public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     // Endpoint para autenticar al usuario (login)
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Map<String, String> loginData) {
@@ -30,7 +34,7 @@ public class UsuarioController {
 
         // Buscar el usuario en la base de datos
         Usuario usuarioAdmin = usuarioRepository.findByUsuario(usuario);
-        if (usuarioAdmin == null || !usuarioAdmin.getContrasena().equals(contrasena)) {
+        if (usuarioAdmin == null || !passwordEncoder.matches(contrasena, usuarioAdmin.getContrasena())) {
             return new ResponseEntity<>("Usuario o contraseña incorrectos", HttpStatus.UNAUTHORIZED);
         }
 
@@ -51,7 +55,7 @@ public class UsuarioController {
         // Crear el nuevo usuario
         Usuario nuevoUsuario = new Usuario();
         nuevoUsuario.setUsuario(usuario);
-        nuevoUsuario.setContrasena(contrasena);  // Guardar la contraseña en texto plano
+        nuevoUsuario.setContrasena(passwordEncoder.encode(contrasena));  // Guardar la contraseña en texto plano
 
         // Guardar el nuevo usuario en la base de datos
         usuarioRepository.save(nuevoUsuario);
